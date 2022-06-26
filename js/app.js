@@ -19,7 +19,7 @@ const db = getFirestore(app);
 //state change handler
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    document.querySelector("span").innerText = "hi " + user.email;
+    document.querySelector("#hi").innerText = "hi " + user.email;
     run(user);
   } else {
     window.location.replace("/index.html");
@@ -30,14 +30,15 @@ async function run(user) {
   const querySnapshot = await getDocs(
     collection(db, "users/" + user.uid + "/tasks")
   );
+  document.querySelector("#loading").style.display = "none";
+  document.querySelector("#app").style.display = "block";
   querySnapshot.forEach((doc) => {
     const card = document.createElement("div");
-    const task = document.createElement("p");
-    task.innerText = doc.data().task;
-    card.appendChild(task);
+    const newtask = document.createElement("p");
+    newtask.innerText = doc.data().task;
+    card.appendChild(newtask);
     card.classList.add("taskCard");
     document.querySelector("#allTasks").appendChild(card);
-    console.log(doc.id, " => ", doc.data());
   });
 }
 
@@ -50,6 +51,13 @@ document.querySelector("#addNewTask").addEventListener("click", () => {
   addDoc(collection(db, "users/" + user.uid + "/tasks"), {
     task,
     time,
+  }).then(() => {
+    const card = document.createElement("div");
+    const newtask = document.createElement("p");
+    newtask.innerText = task;
+    card.appendChild(newtask);
+    card.classList.add("taskCard");
+    document.querySelector("#allTasks").appendChild(card);
   });
 });
 
